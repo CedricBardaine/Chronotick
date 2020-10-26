@@ -5,6 +5,8 @@
 
       <v-spacer></v-spacer>
 
+      {{$vuetify.breakpoint.name}}
+
       <v-btn href="https://github.com/CedricBardaine" target="_blank" text>
         <span class="mr-2">CedricBardaine</span>
         <v-icon>mdi-github</v-icon>
@@ -26,21 +28,42 @@
           @dblclick="reset()"
           >reset</v-btn
         >
-        <div id="timer">
-          <span class="text-h2 primary--text">
-            {{ hours ? hours : "" }}
-          </span>
-          <span class="text-h6 secondary--text">
-            {{ hours ? "h" : "" }}
-          </span>
-          <span class="text-h2 primary--text"> {{ minutes }} </span>
-          <span class="text-h6 secondary--text"> m </span>
-          <span class="text-h2 primary--text"> {{ seconds }} </span>
-          <span class="text-h6 secondary--text"> s </span>
-          <span class="text-h2 primary--text"> {{ tenths }} </span>
-          <span class="text-h6 secondary--text"> ms </span>
-        </div>
-        <v-btn color="primary" @click="addTick()" :disabled="!started">tick</v-btn>
+        <v-row>
+
+        <v-spacer v-show="!$vuetify.breakpoint.xs"></v-spacer>
+        <v-row id="timer" >
+          <v-col v-if="hours" justify="center">
+            <v-row justify="center" class="text-h2 primary--text">
+              {{ hours ? hours : "" }}
+            </v-row>
+            <v-row justify="center" class="text-h6 secondary--text">
+              {{ hours ? "h" : "" }}
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row justify="center" class="text-h2 primary--text">
+              {{ minutes }}
+            </v-row>
+            <v-row justify="center" class="text-h6 secondary--text"> m </v-row>
+          </v-col>
+          <v-col>
+            <v-row justify="center" class="text-h2 primary--text">
+              {{ seconds }}
+            </v-row>
+            <v-row justify="center" class="text-h6 secondary--text"> s </v-row>
+          </v-col>
+          <v-col>
+            <v-row justify="center" class="text-h2 primary--text">
+              {{ tenths }}
+            </v-row>
+            <v-row justify="center" class="text-h6 secondary--text"> ms </v-row>
+          </v-col>
+        </v-row>
+        <v-spacer v-show="!$vuetify.breakpoint.xs"></v-spacer>
+        </v-row>
+        <v-btn color="primary" @click="addTick()" :disabled="!started"
+          >tick</v-btn
+        >
       </v-container>
     </v-main>
 
