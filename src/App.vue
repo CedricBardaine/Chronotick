@@ -19,13 +19,13 @@
         }}</v-btn>
         <v-row>
           <v-col>
-            <v-btn color="primary">pause</v-btn>
+            <v-btn color="primary" @click="pauseResume()">pause</v-btn>
           </v-col>
           <v-col>
             <v-btn color="primary">reset</v-btn>
           </v-col>
         </v-row>
-        <v-btn text class="text-h1" color="secondary">{{
+        <v-btn text class="text-h1"  color="secondary">{{
           theTimer_elapsed ? theTimer_elapsed : "0"
         }}</v-btn>
       </v-container>
@@ -81,7 +81,14 @@ export default {
       // this.startTime = Date.now();
 
       this.theTimer.start({precision: 'secondTenths'});
-      console.log(this.theTimer);
+    },
+    pauseResume() {
+      if(this.theTimer.isPaused()) {
+        this.theTimer.start() ;
+      }
+      else {
+        this.theTimer.pause();
+      }
     },
     addTick() {
       this.ticks.push(Date.now());
@@ -93,11 +100,11 @@ export default {
       let tenths = aEasyTimer.getTimeValues().secondTenths;
       let ret = "";
 
-      if (!secondes) ret = "0";
+      if (!secondes && !tenths) ret = "0";
       else {
         ret += hours ? hours + ":" : '';
         ret += minutes ? minutes + ":" : '';
-        ret += secondes ? secondes + ":" : '';
+        ret += secondes + ":" ;
         ret += tenths;
       }
 
@@ -106,6 +113,7 @@ export default {
   },
   mounted() {
     this.theTimer = new Timer();
+    console.log(this.theTimer);
     let self = this;
 
     this.theTimer.addEventListener("secondTenthsUpdated", function (e) {
