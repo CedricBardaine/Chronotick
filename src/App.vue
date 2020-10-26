@@ -102,6 +102,11 @@ export default {
             this.theTimer.getTimeValues().seconds
         : "";
     },
+    totalSecs() {
+      let nbSecs = (this.hours * 60 + this.minutes) * 60 + this.seconds;
+      if (this.tenths >= 5) nbSecs++;
+      return nbSecs;
+    }
   },
   methods: {
     start() {
@@ -126,10 +131,7 @@ export default {
       this.paused = false;
     },
     addTick() {
-      let nbSecs = (this.hours * 60 + this.minutes) * 60 + this.seconds;
-      if (this.tenths >= 5) nbSecs++;
-
-      this.ticks.push(nbSecs);
+      this.ticks.push(this.totalSecs);
     },
     /**
      * @deprecated
