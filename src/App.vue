@@ -14,15 +14,18 @@
     <v-main>
       <!-- faire le button et graph là  -->
       <v-container grid-list-xs class="text-center">
-        <v-btn color="primary" @click="triggerChrono">!!!</v-btn>
-        <v-row>
-          <v-col>
-            <v-btn color="primary" @click="triggerChrono()">noting</v-btn>
-          </v-col>
-          <v-col>
-            <v-btn color="primary">reset</v-btn>
-          </v-col>
-        </v-row>
+        <v-btn class="ma-1" color="primary" @click="triggerChrono()">{{
+          !started ? "start" : paused ? "resume" : "pause"
+        }}</v-btn>
+        <br />
+        <!-- TODO: add vAlert to notify it needs a doubleclick  -->
+        <v-btn
+          class="ma-1"
+          color="primary"
+          :disabled="!started"
+          @dblclick="reset()"
+          >reset</v-btn
+        >
         <div id="timer">
           <span class="text-h2 primary--text">
             {{ hours ? hours : "" }}
@@ -37,18 +40,14 @@
           <span class="text-h2 primary--text"> {{ tenths }} </span>
           <span class="text-h6 secondary--text"> ms </span>
         </div>
+        <v-btn color="primary" @click="addTick()" :disabled="!started">tick</v-btn>
       </v-container>
     </v-main>
 
     actionBtnTxt : {{ actionBtnTxt }} <br />
-    onPause : {{ onPause }} <br />
-    counting : {{ counting }} <br />
-    startTime : {{ startTime }} <br />
     ticks : {{ ticks }} <br />
     displayCurrentTime : {{ displayCurrentTime }} <br />
     theTimer : {{ theTimer }} <br />
-
-    <!-- TODO: faire en sorte que le date.now puisse etre détecté et que le chrono marche , vérifier les start stop reset et faire que ca marche tout ca bref -->
   </v-app>
 </template>
 
@@ -60,11 +59,10 @@ export default {
   components: {},
   data: () => ({
     actionBtnTxt: ["start", "tick"],
-    onPause: false,
-    counting: false,
-    startTime: 0,
-    ticks: [],
+    ticks: [], // in seconds
     theTimer: null,
+    paused: false,
+    started: false,
 
     hours: 0,
     minutes: 0,
@@ -84,21 +82,31 @@ export default {
   },
   methods: {
     start() {
-      console.log(this.theTimer.isPaused());
       this.theTimer.start({ precision: "secondTenths" });
-      console.log(this.theTimer.isPaused());
     },
     triggerChrono() {
       if (this.hours + this.minutes + this.seconds + this.tenths <= 0) {
         this.theTimer.start({ precision: "secondTenths" });
+        this.started = true;
       } else if (this.theTimer.isRunning()) {
         this.theTimer.pause();
+        this.paused = true;
       } else {
         this.theTimer.start();
+        this.paused = false;
       }
     },
+    reset() {
+      this.theTimer = new Timer();
+      this.resetTimes();
+      this.started = false;
+      this.paused = false;
+    },
     addTick() {
-      this.ticks.push(Date.now());
+      let nbSecs = (this.hours * 60 + this.minutes) * 60 + this.seconds;
+      if (this.tenths >= 5) nbSecs++;
+
+      this.ticks.push(nbSecs);
     },
     /**
      * @deprecated
@@ -125,6 +133,12 @@ export default {
       this.minutes = this.theTimer.getTimeValues().minutes;
       this.seconds = this.theTimer.getTimeValues().seconds;
       this.tenths = this.theTimer.getTimeValues().secondTenths;
+    },
+    resetTimes() {
+      this.hours = 0;
+      this.minutes = 0;
+      this.seconds = 0;
+      this.tenths = 0;
     },
   },
   mounted() {
