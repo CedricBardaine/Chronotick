@@ -14,20 +14,29 @@
     <v-main>
       <!-- faire le button et graph là  -->
       <v-container grid-list-xs class="text-center">
-        <v-btn color="primary" @click="counting ? addTick() : start()">{{
-          counting ? "tick" : "start"
-        }}</v-btn>
+        <v-btn color="primary" @click="triggerChrono">!!!</v-btn>
         <v-row>
           <v-col>
-            <v-btn color="primary" @click="pauseResume()">pause</v-btn>
+            <v-btn color="primary" @click="triggerChrono()">noting</v-btn>
           </v-col>
           <v-col>
             <v-btn color="primary">reset</v-btn>
           </v-col>
         </v-row>
-        <v-btn text class="text-h1"  color="secondary">{{
-          theTimer_elapsed ? theTimer_elapsed : "0"
-        }}</v-btn>
+        <div id="timer">
+          <span class="text-h2 primary--text">
+            {{ hours ? hours : "" }}
+          </span>
+          <span class="text-h6 secondary--text">
+            {{ hours ? "h" : "" }}
+          </span>
+          <span class="text-h2 primary--text"> {{ minutes }} </span>
+          <span class="text-h6 secondary--text"> m </span>
+          <span class="text-h2 primary--text"> {{ seconds }} </span>
+          <span class="text-h6 secondary--text"> s </span>
+          <span class="text-h2 primary--text"> {{ tenths }} </span>
+          <span class="text-h6 secondary--text"> ms </span>
+        </div>
       </v-container>
     </v-main>
 
@@ -55,13 +64,17 @@ export default {
     counting: false,
     startTime: 0,
     ticks: [],
-    now: 0,
     theTimer: null,
+
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    tenths: 0,
+
     theTimer_elapsed: "",
   }),
   computed: {
     displayCurrentTime() {
-      // return Math.round((this.now - this.startTime) / 1000);
       return this.theTimer
         ? this.theTimer.getTimeValues().minutes +
             ":" +
@@ -70,29 +83,26 @@ export default {
     },
   },
   methods: {
-    updateNow() {
-      this.now = Date.now();
-    },
     start() {
-      // this.updateNow();
-      // setInterval(this.updateNow.bind(this), 1000); // https://medium.com/vuejs-tips/i-want-it-now-ca6c89dded6c
-
-      // this.counting = true;
-      // this.startTime = Date.now();
-
-      this.theTimer.start({precision: 'secondTenths'});
+      console.log(this.theTimer.isPaused());
+      this.theTimer.start({ precision: "secondTenths" });
+      console.log(this.theTimer.isPaused());
     },
-    pauseResume() {
-      if(this.theTimer.isPaused()) {
-        this.theTimer.start() ;
-      }
-      else {
+    triggerChrono() {
+      if (this.hours + this.minutes + this.seconds + this.tenths <= 0) {
+        this.theTimer.start({ precision: "secondTenths" });
+      } else if (this.theTimer.isRunning()) {
         this.theTimer.pause();
+      } else {
+        this.theTimer.start();
       }
     },
     addTick() {
       this.ticks.push(Date.now());
     },
+    /**
+     * @deprecated
+     */
     displayReadableTimer(aEasyTimer) {
       let hours = aEasyTimer.getTimeValues().hours;
       let minutes = aEasyTimer.getTimeValues().minutes;
@@ -100,25 +110,30 @@ export default {
       let tenths = aEasyTimer.getTimeValues().secondTenths;
       let ret = "";
 
-      if (!secondes && !tenths) ret = "0";
+      if (!this.theTimer) ret = "0";
       else {
-        ret += hours ? hours + ":" : '';
-        ret += minutes ? minutes + ":" : '';
-        ret += secondes + ":" ;
-        ret += tenths;
+        ret += hours ? hours + "h" : "";
+        ret += minutes ? minutes + "m" : "";
+        ret += secondes + "s";
+        ret += tenths + "ms";
       }
 
       return ret;
     },
+    updateTimes() {
+      this.hours = this.theTimer.getTimeValues().hours;
+      this.minutes = this.theTimer.getTimeValues().minutes;
+      this.seconds = this.theTimer.getTimeValues().seconds;
+      this.tenths = this.theTimer.getTimeValues().secondTenths;
+    },
   },
   mounted() {
+    let self = this;
     this.theTimer = new Timer();
     console.log(this.theTimer);
-    let self = this;
 
-    this.theTimer.addEventListener("secondTenthsUpdated", function (e) {
-      self.theTimer_elapsed = self.displayReadableTimer(self.theTimer);
-      console.log(e);
+    this.theTimer.addEventListener("secondTenthsUpdated", function () {
+      self.updateTimes();
     });
   },
 };
