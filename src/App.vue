@@ -5,7 +5,7 @@
 
       <v-spacer></v-spacer>
 
-      {{$vuetify.breakpoint.name}}
+      {{ $vuetify.breakpoint.name }}
 
       <v-btn href="https://github.com/CedricBardaine" target="_blank" text>
         <span class="mr-2">CedricBardaine</span>
@@ -29,41 +29,57 @@
           >reset</v-btn
         >
         <v-row>
-
-        <v-spacer v-show="!$vuetify.breakpoint.xs"></v-spacer>
-        <v-row id="timer" >
-          <v-col v-if="hours" justify="center">
-            <v-row justify="center" class="text-h2 primary--text">
-              {{ hours ? hours : "" }}
-            </v-row>
-            <v-row justify="center" class="text-h6 secondary--text">
-              {{ hours ? "h" : "" }}
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row justify="center" class="text-h2 primary--text">
-              {{ minutes }}
-            </v-row>
-            <v-row justify="center" class="text-h6 secondary--text"> m </v-row>
-          </v-col>
-          <v-col>
-            <v-row justify="center" class="text-h2 primary--text">
-              {{ seconds }}
-            </v-row>
-            <v-row justify="center" class="text-h6 secondary--text"> s </v-row>
-          </v-col>
-          <v-col>
-            <v-row justify="center" class="text-h2 primary--text">
-              {{ tenths }}
-            </v-row>
-            <v-row justify="center" class="text-h6 secondary--text"> ms </v-row>
-          </v-col>
+          <v-spacer v-show="!$vuetify.breakpoint.xs"></v-spacer>
+          <v-row id="timer">
+            <v-col v-if="hours" justify="center">
+              <v-row justify="center" class="text-h2 primary--text">
+                {{ hours ? hours : "" }}
+              </v-row>
+              <v-row justify="center" class="text-h6 secondary--text">
+                {{ hours ? "h" : "" }}
+              </v-row>
+            </v-col>
+            <v-col>
+              <v-row justify="center" class="text-h2 primary--text">
+                {{ minutes }}
+              </v-row>
+              <v-row justify="center" class="text-h6 secondary--text">
+                m
+              </v-row>
+            </v-col>
+            <v-col>
+              <v-row justify="center" class="text-h2 primary--text">
+                {{ seconds }}
+              </v-row>
+              <v-row justify="center" class="text-h6 secondary--text">
+                s
+              </v-row>
+            </v-col>
+            <v-col>
+              <v-row justify="center" class="text-h2 primary--text">
+                {{ tenths }}
+              </v-row>
+              <v-row justify="center" class="text-h6 secondary--text">
+                ms
+              </v-row>
+            </v-col>
+          </v-row>
+          <v-spacer v-show="!$vuetify.breakpoint.xs"></v-spacer>
         </v-row>
-        <v-spacer v-show="!$vuetify.breakpoint.xs"></v-spacer>
-        </v-row>
-        <v-btn color="primary" @click="addTick()" :disabled="!started"
+        <v-btn color="primary" @click="addCurrentTick()" :disabled="!started"
           >tick</v-btn
         >
+        <v-row id="chart">
+          <v-container fluid>
+            <v-sparkline
+            color="primary"
+            fill=true
+            :labels="ticksBySecLabel"
+              :value="ticksBySec"
+              type="bars"
+            ></v-sparkline>
+          </v-container>
+        </v-row>
       </v-container>
     </v-main>
 
@@ -82,7 +98,7 @@ export default {
   components: {},
   data: () => ({
     actionBtnTxt: ["start", "tick"],
-    ticks: [], // in seconds
+    ticks: [],
     theTimer: null,
     paused: false,
     started: false,
@@ -91,6 +107,11 @@ export default {
     minutes: 0,
     seconds: 0,
     tenths: 0,
+
+    formerSecond: 0,
+    currentTicks: 0, // nb tick in this second
+    ticksBySec: [],
+    ticksBySecLabel: [],
 
     theTimer_elapsed: "",
   }),
@@ -106,7 +127,7 @@ export default {
       let nbSecs = (this.hours * 60 + this.minutes) * 60 + this.seconds;
       if (this.tenths >= 5) nbSecs++;
       return nbSecs;
-    }
+    },
   },
   methods: {
     start() {
@@ -133,6 +154,9 @@ export default {
     addTick() {
       this.ticks.push(this.totalSecs);
     },
+    addCurrentTick() {
+      this.currentTicks++;
+    },
     /**
      * @deprecated
      */
@@ -158,6 +182,14 @@ export default {
       this.minutes = this.theTimer.getTimeValues().minutes;
       this.seconds = this.theTimer.getTimeValues().seconds;
       this.tenths = this.theTimer.getTimeValues().secondTenths;
+
+      // if se second change we add a tick in the Array, because the chart can only render an Array of int.
+      if(this.seconds > this.formerSecond) {
+        this.ticksBySec.push(this.currentTicks);
+        this.ticksBySecLabel.push(this.currentTicks);
+        this.currentTicks = 0;
+      }
+      this.formerSecond = this.seconds;
     },
     resetTimes() {
       this.hours = 0;
