@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <!-- TODO: details the labels (the x axis) -->
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center text-h6 text-sm-h3">Chronotick</div>
 
@@ -72,11 +73,11 @@
         <v-row id="chart">
           <v-container fluid>
             <v-sparkline
-            color="primary"
-            fill=true
-            :labels="ticksBySecLabel"
+              :fill="true"
+              smooth="4"
+              :labels="ticksBySecLabel"
               :value="ticksBySec"
-              type="bars"
+              :gradient="['#669C5E', '#E8A90C  ']"
             ></v-sparkline>
           </v-container>
         </v-row>
@@ -184,12 +185,13 @@ export default {
       this.tenths = this.theTimer.getTimeValues().secondTenths;
 
       // if se second change we add a tick in the Array, because the chart can only render an Array of int.
-      if(this.seconds > this.formerSecond) {
+      if (this.theTimer.getTotalTimeValues().seconds >= this.formerSecond) {
         this.ticksBySec.push(this.currentTicks);
         this.ticksBySecLabel.push(this.currentTicks);
         this.currentTicks = 0;
+
+        this.formerSecond += 5;
       }
-      this.formerSecond = this.seconds;
     },
     resetTimes() {
       this.hours = 0;
