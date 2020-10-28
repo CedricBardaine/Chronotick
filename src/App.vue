@@ -220,7 +220,7 @@ export default {
       self.showAlert = true;
       setTimeout(() => {
         self.showAlert = false;
-      }, seconds*1000);
+      }, seconds * 1000);
     },
   },
   mounted() {
@@ -243,15 +243,14 @@ export default {
   overflow: hidden;
   padding-right: 8px;
 }
-.c-hide{
-    left: -500px;
+.c-hide {
+  left: -500px;
   transition-duration: 1s;
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
 }
-.c-show{
-    left: 0px;
+.c-show {
+  left: 0px;
   transition-duration: 1s;
-    transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
-
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
 }
 </style>
