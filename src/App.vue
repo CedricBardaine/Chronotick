@@ -27,6 +27,7 @@
           color="primary"
           :disabled="!started"
           @dblclick="reset()"
+          @click="showError(5)"
           >reset</v-btn
         >
         <v-row>
@@ -77,10 +78,21 @@
               smooth="4"
               :labels="ticksBySecLabel"
               :value="ticksBySec"
-              :gradient="['#669C5E', '#E8A90C  ']"
+              :gradient="['#669C5E', '#E8A90C']"
             ></v-sparkline>
           </v-container>
         </v-row>
+
+        <div
+          id="alertWrapper"
+          style=""
+          class="c-appearingVAlert"
+          :class="showAlert ? 'c-show' : 'c-hide'"
+        >
+          <v-alert border="left" color="secondary" dark>
+            Double click if you are sure to reset.
+          </v-alert>
+        </div>
       </v-container>
     </v-main>
 
@@ -88,6 +100,7 @@
     ticks : {{ ticks }} <br />
     displayCurrentTime : {{ displayCurrentTime }} <br />
     theTimer : {{ theTimer }} <br />
+    showAlert : {{ showAlert }} <br />
   </v-app>
 </template>
 
@@ -113,6 +126,8 @@ export default {
     currentTicks: 0, // nb tick in this second
     ticksBySec: [],
     ticksBySecLabel: [],
+
+    showAlert: false,
 
     theTimer_elapsed: "",
   }),
@@ -199,6 +214,14 @@ export default {
       this.seconds = 0;
       this.tenths = 0;
     },
+    showError(seconds) {
+      let self = this;
+
+      self.showAlert = true;
+      setTimeout(() => {
+        self.showAlert = false;
+      }, seconds*1000);
+    },
   },
   mounted() {
     let self = this;
@@ -211,3 +234,24 @@ export default {
   },
 };
 </script>
+
+<style >
+.c-appearingVAlert {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  overflow: hidden;
+  padding-right: 8px;
+}
+.c-hide{
+  width: 0px;
+  transition-duration: 1s;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+.c-show{
+  width: 100%;
+  transition-duration: 1s;
+    transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+
+}
+</style>
