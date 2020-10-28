@@ -91,6 +91,19 @@
             Double click if you are sure to reset.
           </v-alert>
         </div>
+
+        <v-card id="ticksList" tile style="height: 250px; overflow: auto">
+          <v-list>
+            <v-list-item-content
+              v-for="(time, i) in ticksInversedList"
+              :key="i"
+            >
+              <v-list-item-title>{{
+                secondsToReadable_m_s(time)
+              }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list>
+        </v-card>
       </v-container>
     </v-main>
   </v-app>
@@ -138,6 +151,9 @@ export default {
       if (this.tenths >= 5) nbSecs++;
       return nbSecs;
     },
+    ticksInversedList() {
+      return [...this.ticks].reverse();
+    },
   },
   methods: {
     start() {
@@ -166,6 +182,7 @@ export default {
     },
     addCurrentTick() {
       this.currentTicks++;
+      this.addTick();
     },
     /**
      * @deprecated
@@ -231,6 +248,14 @@ export default {
         self.showAlert = false;
       }, seconds * 1000);
     },
+    secondsToReadable_m_s(totSeconds) {
+      let nbMinutes = Math.floor(totSeconds / 60);
+      let nbSecondes = totSeconds - nbMinutes * 60;
+
+      return (
+        nbMinutes + ":" + (nbSecondes < 10 ? "0" + nbSecondes : nbSecondes)
+      );
+    },
   },
   mounted() {
     let self = this;
@@ -251,6 +276,7 @@ export default {
   left: 0px;
   overflow: hidden;
   padding-right: 8px;
+  z-index: 99;
 }
 .c-hide {
   left: -500px;
