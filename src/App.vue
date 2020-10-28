@@ -244,12 +244,12 @@ export default {
   padding-right: 8px;
 }
 .c-hide{
-  width: 0px;
+    left: -500px;
   transition-duration: 1s;
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
 }
 .c-show{
-  width: 100%;
+    left: 0px;
   transition-duration: 1s;
     transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
 
