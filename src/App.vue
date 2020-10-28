@@ -1,12 +1,11 @@
 <template>
   <v-app>
     <!-- TODO: details the labels (the x axis) -->
+    <!-- TODO: replace dbclick behavior by a hold click, on mobile, the window is zooming on dbclick -->
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center text-h6 text-sm-h3">Chronotick</div>
 
       <v-spacer></v-spacer>
-
-      {{ $vuetify.breakpoint.name }}
 
       <v-btn href="https://github.com/CedricBardaine" target="_blank" text>
         <span class="mr-2">CedricBardaine</span>
