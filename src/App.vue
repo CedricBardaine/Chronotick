@@ -21,13 +21,11 @@
           !started ? "start" : paused ? "resume" : "pause"
         }}</v-btn>
         <br />
-        <!-- TODO: add vAlert to notify it needs a doubleclick  -->
         <v-btn
           class="ma-1"
           color="primary"
           :disabled="!started"
-          @dblclick="reset()"
-          @click="showError(5)"
+          @click="handleClick()"
           >reset</v-btn
         >
         <v-row>
@@ -95,12 +93,6 @@
         </div>
       </v-container>
     </v-main>
-
-    actionBtnTxt : {{ actionBtnTxt }} <br />
-    ticks : {{ ticks }} <br />
-    displayCurrentTime : {{ displayCurrentTime }} <br />
-    theTimer : {{ theTimer }} <br />
-    showAlert : {{ showAlert }} <br />
   </v-app>
 </template>
 
@@ -128,6 +120,8 @@ export default {
     ticksBySecLabel: [],
 
     showAlert: false,
+    clicks: 0,
+    clickTimer: null,
 
     theTimer_elapsed: "",
   }),
@@ -213,6 +207,21 @@ export default {
       this.minutes = 0;
       this.seconds = 0;
       this.tenths = 0;
+    },
+    handleClick() {
+      let self = this;
+      this.clicks++;
+
+      if (this.clicks == 1) {
+        self.clickTimer = setTimeout(() => {
+          self.showError(5);
+          self.clicks = 0;
+        }, 250);
+      } else {
+        clearTimeout(self.clickTimer);
+        self.reset();
+        self.clicks = 0;
+      }
     },
     showError(seconds) {
       let self = this;
