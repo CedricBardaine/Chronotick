@@ -1,0 +1,1 @@
+.c-appearingVAlert{position:absolute;bottom:0;left:0;overflow:hidden;padding-right:8px;z-index:99}.c-hide{left:-500px}.c-hide,.c-show{transition-duration:1s;transition-timing-function:cubic-bezier(.19,1,.22,1)}.c-show{left:0}
